@@ -1,8 +1,7 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Box, Plane } from '@react-three/drei';
+import { Box, Plane, Sphere, Cylinder } from '@react-three/drei';
 import { useLab } from '../context/LabContext';
-import CircuitTool from '../components/LabTools/CircuitTool';
 
 const PhysicsLab = () => {
   const { labObjects, selectedTool, addObject } = useLab();
@@ -28,7 +27,7 @@ const PhysicsLab = () => {
     <group ref={labRef}>
       {/* Lab Table */}
       <Box
-        args={[8, 0.2, 6]}
+        args={[12, 0.3, 8]}
         position={[0, 0, 0]}
         onClick={handleClick}
       >
@@ -37,50 +36,102 @@ const PhysicsLab = () => {
 
       {/* Lab Floor */}
       <Plane
-        args={[20, 20]}
+        args={[30, 30]}
         rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -1, 0]}
+        position={[0, -2, 0]}
       >
-        <meshStandardMaterial color="#f0f0f0" />
+        <meshStandardMaterial color="#f8fafc" />
       </Plane>
 
-      {/* Render Lab Objects */}
-      {labObjects.map((obj) => (
-        <LabObject key={obj.id} object={obj} />
-      ))}
+      {/* Background Elements */}
+      <Box args={[0.5, 8, 12]} position={[-8, 4, 0]}>
+        <meshStandardMaterial color="#e2e8f0" />
+      </Box>
+      <Box args={[0.5, 8, 12]} position={[8, 4, 0]}>
+        <meshStandardMaterial color="#e2e8f0" />
+      </Box>
 
-      {/* Circuit Tool Component */}
-      <CircuitTool />
+      {/* Render Physics Objects */}
+      {labObjects.map((obj) => (
+        <PhysicsObject key={obj.id} object={obj} />
+      ))}
     </group>
   );
 };
 
-const LabObject = ({ object }) => {
+const PhysicsObject = ({ object }) => {
+  const meshRef = useRef();
+
+  useFrame((state) => {
+    if (meshRef.current && object.type === 'pendulum') {
+      // Simple pendulum animation
+      meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 2) * 0.5;
+    }
+  });
+
   const getObjectMesh = () => {
     switch (object.type) {
-      case 'battery':
+      case 'pendulum':
         return (
-          <Box args={[0.5, 0.3, 1]} position={object.position}>
-            <meshStandardMaterial color="#FFD700" />
+          <group ref={meshRef} position={object.position}>
+            {/* Pendulum string */}
+            <Cylinder args={[0.02, 0.02, 2]} position={[0, 1, 0]}>
+              <meshStandardMaterial color="#666" />
+            </Cylinder>
+            {/* Pendulum bob */}
+            <Sphere args={[0.3]} position={[0, -1, 0]}>
+              <meshStandardMaterial color="#dc2626" />
+            </Sphere>
+          </group>
+        );
+        
+      case 'spring':
+        return (
+          <group position={object.position}>
+            <Cylinder args={[0.3, 0.3, 0.1]} position={[0, 0, 0]}>
+              <meshStandardMaterial color="#374151" />
+            </Cylinder>
+            {/* Spring coils */}
+            {Array.from({ length: 8 }, (_, i) => (
+              <Cylinder key={i} args={[0.15, 0.15, 0.05]} position={[0, i * 0.1 + 0.1, 0]}>
+                <meshStandardMaterial color="#10b981" />
+              </Cylinder>
+            ))}
+          </group>
+        );
+        
+      case 'mass':
+        return (
+          <Box args={[0.6, 0.6, 0.6]} position={object.position}>
+            <meshStandardMaterial color="#3b82f6" />
           </Box>
         );
-      case 'bulb':
+        
+      case 'ramp':
         return (
-          <mesh position={object.position}>
-            <sphereGeometry args={[0.2, 16, 16]} />
-            <meshStandardMaterial color="#FFFF99" transparent opacity={0.8} />
-          </mesh>
-        );
-      case 'wire':
-        return (
-          <Box args={[1, 0.05, 0.05]} position={object.position}>
-            <meshStandardMaterial color="#FF6B35" />
+          <Box args={[3, 0.2, 1]} position={object.position} rotation={[0, 0, -0.3]}>
+            <meshStandardMaterial color="#f59e0b" />
           </Box>
         );
+        
+      case 'lens':
+        return (
+          <Cylinder args={[0.8, 0.8, 0.1]} position={object.position} rotation={[Math.PI/2, 0, 0]}>
+            <meshStandardMaterial color="#06b6d4" transparent opacity={0.7} />
+          </Cylinder>
+        );
+        
+      case 'mirror':
+        return (
+          <Box args={[0.1, 1.5, 1]} position={object.position}>
+            <meshStandardMaterial color="#e5e7eb" metalness={0.9} roughness={0.1} />
+          </Box>
+        );
+        
       default:
         return (
-          <Box args={[0.3, 0.3, 0.3]} position={object.position}>
-            <meshStandardMaterial color="#666" />
+          <Box args={[0.5, 0.5, 0.5]} position={object.position}>
+            <meshStandardMaterial color="#6b7280" />
           </Box>
         );
     }

@@ -1,1 +1,0 @@
-// Chemistry beaker tool component
