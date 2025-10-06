@@ -19,6 +19,12 @@ const ToolSidebar = ({ activeTab }) => {
     { id: 'bulb', name: 'Light Bulb', icon: '💡' },
     { id: 'switch', name: 'Switch', icon: '🔘' },
     { id: 'resistor', name: 'Resistor', icon: '⚡' },
+    { id: 'capacitor', name: 'Capacitor', icon: '🔲' },
+    { id: 'diode', name: 'Diode', icon: '🔺' },
+    { id: 'led', name: 'LED', icon: '🔴' },
+    { id: 'potentiometer', name: 'Potentiometer', icon: '🎛️' },
+    { id: 'ground', name: 'Ground', icon: '⏚' },
+    { id: 'motor', name: 'DC Motor', icon: '⚙️' },
     { id: 'voltmeter', name: 'Voltmeter', icon: '📊' }
   ];
 

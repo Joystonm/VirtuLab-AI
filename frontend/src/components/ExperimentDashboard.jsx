@@ -58,6 +58,15 @@ const ExperimentDashboard = ({ onSelectExperiment }) => {
       color: 'from-indigo-500 to-royal-blue',
       preview: 'Professional optical bench with measurements',
       concepts: ['Reflection', 'Focal Point', 'Real Images', 'Virtual Images']
+    },
+    {
+      id: 'circuit',
+      title: 'Electrical Playground',
+      icon: '⚡',
+      description: '2D circuit builder with drag-and-drop components',
+      color: 'from-yellow-400 to-orange-500',
+      preview: 'Build and test real circuits with live feedback',
+      concepts: ['Ohm\'s Law', 'Current', 'Voltage', 'Resistance', 'Power']
     }
   ];
 

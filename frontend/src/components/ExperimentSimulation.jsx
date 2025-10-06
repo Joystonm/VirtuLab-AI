@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import RealisticSimulation from './RealisticSimulation';
+import ElectricalPlayground from './ElectricalPlayground';
 
 const ExperimentSimulation = ({ experiment, onBack }) => {
+  // If it's the circuit experiment, render the ElectricalPlayground
+  if (experiment.id === 'circuit') {
+    return <ElectricalPlayground onBack={onBack} />;
+  }
+
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentPrompt, setCurrentPrompt] = useState('');
   const [measurements, setMeasurements] = useState({});
@@ -159,20 +165,20 @@ const ExperimentSimulation = ({ experiment, onBack }) => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 mr-32">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className={`px-8 py-4 rounded-2xl font-bold text-lg transition-all duration-200 shadow-lg ${
+              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm ${
                 isPlaying 
-                  ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white' 
-                  : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+                  ? 'bg-red-500 hover:bg-red-600 text-white' 
+                  : 'bg-green-500 hover:bg-green-600 text-white'
               }`}
             >
               {isPlaying ? '⏸️ Pause' : '▶️ Play'}
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-2xl text-white font-bold text-lg transition-all duration-200 shadow-lg"
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-medium text-sm transition-all duration-200 shadow-sm"
             >
               🔄 Reset
             </button>
