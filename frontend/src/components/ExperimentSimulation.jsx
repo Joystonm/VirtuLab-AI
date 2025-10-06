@@ -146,7 +146,7 @@ const ExperimentSimulation = ({ experiment, onBack }) => {
     <div className="h-screen flex flex-col bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="flex items-center justify-between px-8 py-6">
+        <div className="flex items-center justify-between px-6 py-3">
           <div className="flex items-center space-x-4">
             <button
               onClick={onBack}
@@ -157,11 +157,11 @@ const ExperimentSimulation = ({ experiment, onBack }) => {
             </button>
             
             <div className="border-l border-gray-300 pl-6">
-              <h1 className="text-4xl font-bold text-gray-900 flex items-center">
-                <span className="mr-4 text-5xl">{experiment.icon}</span>
+              <h1 className="text-xl font-bold text-gray-900 flex items-center">
+                <span className="mr-2 text-2xl">{experiment.icon}</span>
                 {experiment.title}
               </h1>
-              <p className="text-gray-600 mt-2 text-lg">{experiment.description}</p>
+              <p className="text-gray-600 text-xs">{experiment.description}</p>
             </div>
           </div>
 
@@ -246,21 +246,6 @@ const ExperimentSimulation = ({ experiment, onBack }) => {
         </div>
       </div>
 
-      {/* Bottom Controls - Key Concepts Only */}
-      <div className="bg-white border-t border-gray-200 p-6">
-        <h4 className="text-sm font-bold text-gray-600 uppercase tracking-wide mb-4 text-center">Key Concepts</h4>
-        <div className="flex flex-wrap gap-3 justify-center">
-          {experiment.concepts?.map((concept) => (
-            <button
-              key={concept}
-              onClick={() => handleConceptClick(concept)}
-              className="px-6 py-3 bg-white border-2 border-blue-200 hover:border-blue-400 hover:bg-blue-50 text-blue-700 rounded-full font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              {concept}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Concept Explanation Modal */}
       {showConceptPanel && (
