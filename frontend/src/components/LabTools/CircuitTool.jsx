@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { useLab } from '../../context/LabContext';
-import { useAIHelper } from '../../hooks/useAIHelper';
 
 const CircuitTool = () => {
   const { logExperiment } = useLab();
-  const { getInstantFeedback } = useAIHelper();
   const [circuitState, setCircuitState] = useState({
     isComplete: false,
     hasShortCircuit: false,
@@ -26,14 +24,8 @@ const CircuitTool = () => {
     if (JSON.stringify(newState) !== JSON.stringify(circuitState)) {
       setCircuitState(newState);
       
-      // Log experiment and get AI feedback
+      // Log experiment
       logExperiment('circuit_analysis', newState);
-      
-      if (hasShortCircuit) {
-        getInstantFeedback('short_circuit', { batteries: batteries.length, wires: wires.length });
-      } else if (bulbLit) {
-        getInstantFeedback('circuit_complete', { components: objects.length });
-      }
     }
   };
 

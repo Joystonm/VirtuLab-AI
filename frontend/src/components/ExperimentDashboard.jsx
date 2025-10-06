@@ -81,7 +81,7 @@ const ExperimentDashboard = ({ onSelectExperiment }) => {
           Realistic 3D Physics Experiments
         </p>
         <p className="text-gray-600 text-xl max-w-3xl mx-auto leading-relaxed">
-          Select an experiment to explore physics concepts with realistic simulations and AI guidance
+          Select an experiment to explore physics concepts with realistic simulations and interactive learning
         </p>
       </div>
 
@@ -104,10 +104,10 @@ const ExperimentDashboard = ({ onSelectExperiment }) => {
       {/* Footer */}
       <div className="text-center p-8 border-t border-gray-200 bg-white">
         <p className="text-gray-600 mb-2 text-lg">
-          Powered by <span className="text-royal-blue font-semibold">Groq AI</span> + <span className="text-bright-orange font-semibold">Tavily</span>
+          VirtuLab - Interactive Physics & Electrical Simulations
         </p>
         <p className="text-gray-500">
-          Real-time physics simulations with fact-checked explanations
+          Learn through hands-on experimentation in a virtual laboratory
         </p>
       </div>
     </div>

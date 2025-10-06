@@ -4,7 +4,10 @@ import { AuthProvider } from './context/AuthContext';
 import { LabProvider } from './context/LabContext';
 import { UserProvider } from './context/UserContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import MainLab from './components/MainLab';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Physics from './pages/Physics';
+import Playground from './pages/Playground';
 import './styles/globals.css';
 
 function App() {
@@ -13,11 +16,24 @@ function App() {
       <UserProvider>
         <LabProvider>
           <Router>
-            <div className="h-screen bg-gray-50 dark:bg-gray-900">
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
               <Routes>
                 <Route path="/" element={
                   <ProtectedRoute>
-                    <MainLab />
+                    <Navbar />
+                    <Home />
+                  </ProtectedRoute>
+                } />
+                <Route path="/physics" element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <Physics />
+                  </ProtectedRoute>
+                } />
+                <Route path="/playground" element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <Playground />
                   </ProtectedRoute>
                 } />
               </Routes>

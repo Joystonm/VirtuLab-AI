@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useLab } from '../context/LabContext';
-import { useAIHelper } from '../hooks/useAIHelper';
 
 const CircuitPlayground = () => {
   const canvasRef = useRef(null);
@@ -11,7 +10,6 @@ const CircuitPlayground = () => {
   const [isSimulating, setIsSimulating] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
   const { selectedTool, logExperiment } = useLab();
-  const { getInstantFeedback } = useAIHelper();
 
   useEffect(() => {
     const canvas = canvasRef.current;

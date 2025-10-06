@@ -1,21 +1,20 @@
-# VirtuLab AI - Virtual Physics Lab with AI Tutor
+# VirtuLab - Virtual Physics Lab
 
-Interactive 3D physics lab with 2D circuit builder, powered by AI tutoring capabilities using Groq and Tavily.
+VirtuLab is a browser-based virtual physics and electrical lab that allows students to perform realistic experiments and simulations in an interactive environment.
 
 ## 🚀 Features
 
 - **3D Motion & Optics Lab** - Simulate pendulums, springs, lenses, and Newton's laws
 - **2D Circuit Builder** - Drag & drop electrical components with precise wire drawing
-- **Real-time AI Tutoring** - Instant feedback and explanations powered by Groq + Tavily
 - **Interactive Physics Simulations** - Explore mechanics, oscillations, and optics
-- **Circuit Analysis** - AI detects errors and explains electrical concepts
+- **Real-time Measurements** - Live data collection and analysis
+- **Educational Content** - Built-in explanations of physics concepts
 
 ## 🖥️ Tech Stack
 
 - **Frontend**: React + Three.js + Tailwind CSS
 - **3D Physics**: React Three Fiber + Cannon.js
 - **2D Circuit Builder**: HTML5 Canvas with custom wire drawing
-- **AI Tutor**: Groq LLM + Tavily fact-checking
 - **Backend**: Node.js + Express + Appwrite
 
 ## 🎯 Color Palette
@@ -47,17 +46,10 @@ npm run dev
 ├── backend/           # Node.js + Express backend
 │   ├── src/
 │   │   ├── api/           # REST API routes
-│   │   ├── services/      # Groq & Tavily integrations
+│   │   ├── services/      # Application services
 │   │   └── models/        # Data models
 └── docs/              # Documentation
 ```
-
-## 🤖 AI Features
-
-- **Instant Feedback** - Real-time analysis of experiments
-- **Concept Explanations** - Why physics phenomena occur
-- **Error Detection** - Identifies circuit problems and safety issues
-- **Challenge Mode** - AI suggests new experiments to try
 
 ## 🔬 Physics Experiments
 
@@ -68,11 +60,11 @@ npm run dev
 - Lens focusing and optics principles
 
 ### 2D Circuit Builder
-- Complete circuit analysis
-- Component behavior explanation
-- Short circuit detection
-- Electrical safety guidance
+- Complete circuit simulation
+- Component behavior visualization
+- Real-time electrical measurements
+- Interactive learning tools
 
 ---
 
-**VirtuLab AI = PhET Simulations + AI Tutor → Free, Interactive, AI-powered Physics Lab**
+**VirtuLab = Interactive Physics & Electrical Simulations for Education**
