@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { user, logout } = useAuth();
 
   const navItems = [
     { path: '/', label: 'Home' },
@@ -16,14 +14,6 @@ const Navbar = () => {
   ];
 
   const isActive = (path) => location.pathname === path;
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
 
   return (
     <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
@@ -52,20 +42,6 @@ const Navbar = () => {
                 </motion.div>
               </Link>
             ))}
-          </div>
-
-          <div className="hidden md:flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-gray-700">
-                {user?.name?.charAt(0) || 'U'}
-              </span>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Sign out
-            </button>
           </div>
 
           <button
@@ -99,14 +75,6 @@ const Navbar = () => {
                 {item.label}
               </Link>
             ))}
-            <div className="border-t border-gray-200 pt-3 mt-3">
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
-              >
-                Sign out
-              </button>
-            </div>
           </motion.div>
         )}
       </div>
