@@ -23,7 +23,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const session = await account.get();
       setUser(session);
+      console.log('✅ User authenticated:', session.email);
     } catch (error) {
+      console.log('ℹ️ No active session:', error.message);
       setUser(null);
     } finally {
       setLoading(false);
@@ -31,10 +33,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    await account.createEmailPasswordSession(email, password);
-    const user = await account.get();
-    setUser(user);
-    return user;
+    try {
+      await account.createEmailPasswordSession(email, password);
+      const user = await account.get();
+      setUser(user);
+      console.log('✅ Login successful:', user.email);
+      return user;
+    } catch (error) {
+      console.error('❌ Login failed:', error.message);
+      throw error;
+    }
   };
 
   const register = async (email, password, name) => {
