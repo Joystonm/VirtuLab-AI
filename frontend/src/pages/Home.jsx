@@ -3,101 +3,68 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 const Home = () => {
-  const previewCards = [
+  const features = [
     {
-      title: 'Physics Experiments',
-      description: 'Explore 3D physics simulations with realistic mechanics, optics, and motion studies.',
-      icon: '⚛️',
+      title: 'Physics Lab',
+      description: 'Interactive 3D physics simulations with realistic mechanics and optics',
       path: '/physics',
-      color: 'from-royal-blue to-blue-600',
-      features: ['Pendulum Oscillation', 'Spring-Mass Systems', 'Optics & Lenses', 'Newton\'s Laws']
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      ),
+      gradient: 'from-blue-500 to-purple-600'
     },
     {
-      title: 'Electrical Playground',
-      description: 'Build and test electrical circuits with drag-and-drop components and real-time analysis.',
-      icon: '⚡',
+      title: 'Circuit Builder',
+      description: 'Build and test electrical circuits with drag-and-drop components',
       path: '/playground',
-      color: 'from-yellow-400 to-orange-500',
-      features: ['Circuit Builder', 'Component Library', 'Live Simulation', 'Error Detection']
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+        </svg>
+      ),
+      gradient: 'from-emerald-500 to-teal-600'
     }
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lab-bg to-blue-50">
-      <motion.div
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Hero Section */}
-        <motion.div className="text-center mb-16" variants={itemVariants}>
-          <h1 className="text-6xl md:text-7xl font-bold text-royal-blue mb-6 tracking-wide">
-            Virtual Science Lab
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="max-w-6xl mx-auto px-6 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            Virtual Science
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Laboratory</span>
           </h1>
-          <p className="text-2xl md:text-3xl text-dark-gray mb-6 font-light">
-            Explore Real Physics & Electrical Experiments
-          </p>
-          <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            Experience interactive 3D physics simulations and build electrical circuits with real-time feedback. 
-            Learn through hands-on experimentation in a realistic virtual laboratory environment.
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Experience interactive physics simulations and build electrical circuits with real-time feedback in a modern virtual lab environment.
           </p>
         </motion.div>
 
-        {/* Features Grid */}
-        <motion.div className="grid md:grid-cols-2 gap-8 mb-16" variants={itemVariants}>
-          {previewCards.map((card, index) => (
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+          {features.map((feature, index) => (
             <motion.div
-              key={card.title}
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -5 }}
               className="group"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
             >
-              <Link to={card.path}>
-                <div className={`bg-gradient-to-br ${card.color} p-8 rounded-2xl shadow-xl text-white h-full transition-all duration-300 group-hover:shadow-2xl`}>
-                  <div className="flex items-center mb-6">
-                    <span className="text-4xl mr-4">{card.icon}</span>
-                    <h2 className="text-3xl font-bold">{card.title}</h2>
+              <Link to={feature.path}>
+                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 h-full">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform`}>
+                    {feature.icon}
                   </div>
-                  
-                  <p className="text-lg mb-6 opacity-90">
-                    {card.description}
-                  </p>
-                  
-                  <div className="space-y-2 mb-6">
-                    {card.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center">
-                        <span className="w-2 h-2 bg-white rounded-full mr-3 opacity-75"></span>
-                        <span className="text-sm opacity-90">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex items-center text-lg font-semibold group-hover:translate-x-2 transition-transform duration-300">
-                    <span>Explore</span>
-                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
+                  <p className="text-gray-600 mb-6 leading-relaxed">{feature.description}</p>
+                  <div className="flex items-center text-blue-600 font-medium group-hover:translate-x-2 transition-transform">
+                    <span>Get Started</span>
+                    <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </div>
@@ -105,60 +72,63 @@ const Home = () => {
               </Link>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Features Section */}
-        <motion.div 
-          className="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center"
-          variants={itemVariants}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white rounded-2xl p-8 md:p-12 shadow-lg border border-gray-200"
         >
-          <h2 className="text-4xl font-bold text-dark-gray mb-6">
-            Interactive Learning Features
-          </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-            Experience hands-on learning with real-time simulations, detailed measurements, and comprehensive educational content.
-          </p>
-          
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose VirtuLab?</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Advanced simulation technology meets intuitive design for the ultimate learning experience
+            </p>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-royal-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl text-white">📊</span>
+            {[
+              {
+                icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 00-2 2z" />
+                  </svg>
+                ),
+                title: 'Real-time Data',
+                description: 'Live measurements and instant feedback during experiments'
+              },
+              {
+                icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                ),
+                title: 'Educational Content',
+                description: 'Built-in explanations and guided learning materials'
+              },
+              {
+                icon: (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                ),
+                title: 'Interactive Tools',
+                description: 'Manipulate variables and observe immediate results'
+              }
+            ].map((item, index) => (
+              <div key={index} className="text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4 text-blue-600">
+                  {item.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-gray-600 text-sm">{item.description}</p>
               </div>
-              <h3 className="text-xl font-semibold text-dark-gray mb-2">Real-time Data</h3>
-              <p className="text-gray-600">Live measurements and calculations during experiments</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-green rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl text-white">💡</span>
-              </div>
-              <h3 className="text-xl font-semibold text-dark-gray mb-2">Educational Content</h3>
-              <p className="text-gray-600">Built-in explanations of physics concepts and principles</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-bright-orange rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl text-white">🔍</span>
-              </div>
-              <h3 className="text-xl font-semibold text-dark-gray mb-2">Interactive Tools</h3>
-              <p className="text-gray-600">Manipulate variables and observe immediate results</p>
-            </div>
+            ))}
           </div>
         </motion.div>
-
-        {/* Footer */}
-        <motion.div 
-          className="text-center mt-16 pt-8 border-t border-gray-200"
-          variants={itemVariants}
-        >
-          <p className="text-gray-600 mb-2 text-lg">
-            VirtuLab - Interactive Physics & Electrical Simulations
-          </p>
-          <p className="text-gray-500">
-            Learn through hands-on experimentation in a virtual laboratory
-          </p>
-        </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 };
