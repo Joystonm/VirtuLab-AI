@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Box, Sphere, Cylinder, Plane } from '@react-three/drei';
+import { Box, Sphere, Cylinder, Plane, Text } from '@react-three/drei';
 
 const RealisticSimulation = ({ experimentType, isPlaying, onMeasurement, onPromptChange, parameters = {} }) => {
   const renderExperiment = () => {
@@ -520,138 +520,248 @@ const NewtonExperiment = ({ isPlaying, onMeasurement, onPromptChange, parameters
 const LensExperiment = ({ isPlaying, onMeasurement, onPromptChange, parameters }) => {
   const objectRef = useRef();
   const imageRef = useRef();
-  const rayRefs = useRef([]);
+  const screenRef = useRef();
   
   const objectDistance = parameters.objectDistance || 30;
   const focalLength = parameters.focalLength || 15;
-  const objectHeight = 2;
+  const objectHeight = 2.5;
   
   // Lens equation: 1/f = 1/do + 1/di
   const imageDistance = (focalLength * objectDistance) / (objectDistance - focalLength);
   const magnification = -imageDistance / objectDistance;
   const imageHeight = Math.abs(magnification) * objectHeight;
-  const isReal = imageDistance > 0;
+  const isReal = imageDistance > 0 && objectDistance > focalLength;
   const isInverted = magnification < 0;
   
-  // Convert to 3D positions (scale down for better visualization)
-  const objPos = -objectDistance / 10;
-  const imgPos = imageDistance / 10;
-  const focalPos = focalLength / 10;
+  // Scale positions for 3D scene
+  const objPos = -objectDistance / 8;
+  const imgPos = isReal ? imageDistance / 8 : objPos;
+  const focalPos = focalLength / 8;
   
   React.useEffect(() => {
     if (objectRef.current) {
       objectRef.current.position.x = objPos;
     }
-    if (imageRef.current) {
+    if (imageRef.current && isReal) {
       imageRef.current.position.x = imgPos;
       imageRef.current.scale.y = imageHeight / objectHeight;
-      // Set opacity on all children materials
-      imageRef.current.traverse((child) => {
-        if (child.material) {
-          child.material.opacity = isReal ? 1.0 : 0.5;
-          child.material.transparent = true;
-        }
-      });
+      imageRef.current.visible = true;
+    } else if (imageRef.current) {
+      imageRef.current.visible = false;
+    }
+    if (screenRef.current && isReal) {
+      screenRef.current.position.x = imgPos;
     }
   }, [objPos, imgPos, imageHeight, isReal]);
 
   onMeasurement({
     'Object Distance (cm)': objectDistance.toFixed(1),
+    'Image Distance (cm)': Math.abs(imageDistance).toFixed(1),
     'Focal Length (cm)': focalLength.toFixed(1),
-    'Image Distance (cm)': imageDistance.toFixed(1),
     'Magnification': magnification.toFixed(2),
     'Image Height (cm)': imageHeight.toFixed(1),
-    'Image Type': isReal ? 'Real, Inverted' : 'Virtual, Upright',
-    'Image Nature': isReal ? 'Can be projected' : 'Cannot be projected'
+    'Image Type': isReal ? 'Real, Inverted' : 'Virtual, Upright'
   });
 
-  // Ray paths for visualization
-  const RayPath = ({ start, end, color }) => (
-    <group>
-      <Cylinder 
-        args={[0.01, 0.01, Math.sqrt((end[0]-start[0])**2 + (end[1]-start[1])**2)]}
-        position={[(start[0]+end[0])/2, (start[1]+end[1])/2, 0]}
-        rotation={[0, 0, Math.atan2(end[1]-start[1], end[0]-start[0])]}
+  const Ray = ({ start, end, color, opacity = 1, dashed = false }) => {
+    const length = Math.sqrt((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2);
+    const midX = (start[0] + end[0]) / 2;
+    const midY = (start[1] + end[1]) / 2;
+    const angle = Math.atan2(end[1] - start[1], end[0] - start[0]);
+    
+    return (
+      <Cylinder
+        args={[0.008, 0.008, length]}
+        position={[midX, midY, 0]}
+        rotation={[0, 0, angle]}
       >
-        <meshStandardMaterial color={color} />
+        <meshStandardMaterial 
+          color={color} 
+          transparent 
+          opacity={opacity}
+          emissive={color}
+          emissiveIntensity={0.1}
+        />
       </Cylinder>
-    </group>
-  );
+    );
+  };
 
   return (
     <group>
-      {/* Optical bench */}
-      <Box args={[10, 0.1, 0.3]} position={[0, 0, 0]}>
-        <meshStandardMaterial color="#64748b" />
+      {/* Professional Optical Bench */}
+      <Box args={[10, 0.15, 0.8]} position={[0, 0, 0]}>
+        <meshStandardMaterial color="#2a2a2a" metalness={0.8} roughness={0.2} />
       </Box>
       
-      {/* Lens */}
-      <Cylinder args={[1.2, 1.2, 0.1]} rotation={[Math.PI/2, 0, 0]} position={[0, 0.6, 0]}>
-        <meshStandardMaterial color="#60a5fa" transparent opacity={0.7} />
+      {/* Bench Rails */}
+      <Cylinder args={[0.02, 0.02, 10]} rotation={[0, Math.PI/2, 0]} position={[0, 0.1, 0.3]}>
+        <meshStandardMaterial color="#4a5568" metalness={0.9} roughness={0.1} />
+      </Cylinder>
+      <Cylinder args={[0.02, 0.02, 10]} rotation={[0, Math.PI/2, 0]} position={[0, 0.1, -0.3]}>
+        <meshStandardMaterial color="#4a5568" metalness={0.9} roughness={0.1} />
       </Cylinder>
       
-      {/* Lens edges (thicker at center) */}
-      <Cylinder args={[1.2, 1.0, 0.05]} rotation={[Math.PI/2, 0, 0]} position={[0, 0.6, 0.08]}>
-        <meshStandardMaterial color="#3b82f6" transparent opacity={0.8} />
-      </Cylinder>
-      <Cylinder args={[1.2, 1.0, 0.05]} rotation={[Math.PI/2, 0, 0]} position={[0, 0.6, -0.08]}>
-        <meshStandardMaterial color="#3b82f6" transparent opacity={0.8} />
+      {/* Principal Optical Axis */}
+      <Cylinder args={[0.003, 0.003, 8]} rotation={[0, Math.PI/2, 0]} position={[0, 1.3, 0]}>
+        <meshStandardMaterial color="#e53e3e" emissive="#e53e3e" emissiveIntensity={0.2} />
       </Cylinder>
       
-      {/* Principal axis */}
-      <Cylinder args={[0.01, 0.01, 10]} rotation={[0, Math.PI/2, 0]} position={[0, 0.6, 0]}>
-        <meshStandardMaterial color="#6b7280" />
-      </Cylinder>
-      
-      {/* Focal points */}
-      <Sphere args={[0.05]} position={[focalPos, 0.6, 0]}>
-        <meshStandardMaterial color="#f59e0b" />
-      </Sphere>
-      <Sphere args={[0.05]} position={[-focalPos, 0.6, 0]}>
-        <meshStandardMaterial color="#f59e0b" />
-      </Sphere>
-      
-      {/* Object (red arrow) */}
-      <group ref={objectRef} position={[objPos, 0.6, 0]}>
-        <Cylinder args={[0.05, 0.05, objectHeight]} position={[0, objectHeight/2, 0]}>
-          <meshStandardMaterial color="#ef4444" />
-        </Cylinder>
-        <Cylinder args={[0.1, 0, 0.2]} position={[0, objectHeight, 0]}>
-          <meshStandardMaterial color="#ef4444" />
-        </Cylinder>
-      </group>
-      
-      {/* Image (green arrow) */}
-      <group ref={imageRef} position={[imgPos, 0.6, 0]}>
-        <Cylinder 
-          args={[0.05, 0.05, objectHeight]} 
-          position={[0, isInverted ? -objectHeight/2 : objectHeight/2, 0]}
-          rotation={isInverted ? [0, 0, Math.PI] : [0, 0, 0]}
-        >
-          <meshStandardMaterial color="#22c55e" transparent />
-        </Cylinder>
-        <Cylinder 
-          args={[0.1, 0, 0.2]} 
-          position={[0, isInverted ? -objectHeight : objectHeight, 0]}
-          rotation={isInverted ? [0, 0, Math.PI] : [0, 0, 0]}
-        >
-          <meshStandardMaterial color="#22c55e" transparent />
+      {/* Convex Lens Assembly */}
+      <group position={[0, 1.3, 0]}>
+        {/* Main Lens Body - Biconvex Shape */}
+        <Sphere args={[1.5]} position={[0.15, 0, 0]} scale={[0.2, 1, 1]}>
+          <meshStandardMaterial 
+            color="#87ceeb" 
+            transparent 
+            opacity={0.8}
+            roughness={0.1}
+            metalness={0.1}
+            envMapIntensity={1.5}
+          />
+        </Sphere>
+        <Sphere args={[1.5]} position={[-0.15, 0, 0]} scale={[0.2, 1, 1]}>
+          <meshStandardMaterial 
+            color="#87ceeb" 
+            transparent 
+            opacity={0.8}
+            roughness={0.1}
+            metalness={0.1}
+            envMapIntensity={1.5}
+          />
+        </Sphere>
+        
+        {/* Lens Frame */}
+        <Cylinder args={[1.4, 1.4, 0.05]} rotation={[Math.PI/2, 0, 0]} position={[0, 0, 0]}>
+          <meshStandardMaterial color="#1a1a1a" metalness={0.8} roughness={0.3} />
         </Cylinder>
       </group>
       
-      {/* Light rays */}
-      <RayPath start={[objPos, 0.6 + objectHeight, 0]} end={[0, 0.6 + objectHeight, 0]} color="#fbbf24" />
-      <RayPath start={[0, 0.6 + objectHeight, 0]} end={[imgPos, 0.6 + (isInverted ? -imageHeight : imageHeight), 0]} color="#fbbf24" />
-      
-      <RayPath start={[objPos, 0.6 + objectHeight, 0]} end={[0, 0.6, 0]} color="#f97316" />
-      <RayPath start={[0, 0.6, 0]} end={[imgPos, 0.6 + (isInverted ? -imageHeight : imageHeight), 0]} color="#f97316" />
-      
-      {/* Scale markings */}
-      {[-4, -3, -2, -1, 1, 2, 3, 4].map(pos => (
-        <Box key={pos} args={[0.02, 0.2, 0.02]} position={[pos, 0.1, 0]}>
-          <meshStandardMaterial color="#9ca3af" />
+      {/* Lens Holder Stand */}
+      <group position={[0, 0.65, 0]}>
+        <Box args={[0.2, 1.3, 0.2]} position={[0, 0, 0]}>
+          <meshStandardMaterial color="#2d3748" metalness={0.6} roughness={0.4} />
         </Box>
+        <Cylinder args={[0.15, 0.15, 0.4]} rotation={[0, Math.PI/2, 0]} position={[0, 0.65, 0]}>
+          <meshStandardMaterial color="#4a5568" metalness={0.7} roughness={0.3} />
+        </Cylinder>
+      </group>
+      
+      {/* Focal Point Markers */}
+      <Sphere args={[0.04]} position={[focalPos, 1.3, 0]}>
+        <meshStandardMaterial color="#ffd700" emissive="#ffd700" emissiveIntensity={0.3} />
+      </Sphere>
+      <Text position={[focalPos, 1.1, 0]} fontSize={0.1} color="#ffd700">F</Text>
+      
+      <Sphere args={[0.04]} position={[-focalPos, 1.3, 0]}>
+        <meshStandardMaterial color="#ffd700" emissive="#ffd700" emissiveIntensity={0.3} />
+      </Sphere>
+      <Text position={[-focalPos, 1.1, 0]} fontSize={0.1} color="#ffd700">F</Text>
+      
+      {/* Light Source (LED Array) */}
+      <group ref={objectRef} position={[objPos, 1.3, 0]}>
+        {/* LED Housing */}
+        <Box args={[0.15, 0.4, 0.3]} position={[0, 0, 0]}>
+          <meshStandardMaterial color="#1a1a1a" />
+        </Box>
+        {/* Object Arrow */}
+        <Cylinder args={[0.04, 0.04, objectHeight]} position={[0, objectHeight/2, 0]}>
+          <meshStandardMaterial color="#ff4500" emissive="#ff4500" emissiveIntensity={0.2} />
+        </Cylinder>
+        <Cylinder args={[0.08, 0, 0.2]} position={[0, objectHeight, 0]}>
+          <meshStandardMaterial color="#ff4500" emissive="#ff4500" emissiveIntensity={0.2} />
+        </Cylinder>
+        {/* Light Source Stand */}
+        <Box args={[0.15, 0.8, 0.15]} position={[0, -0.4, 0]}>
+          <meshStandardMaterial color="#2d3748" />
+        </Box>
+      </group>
+      
+      {/* Image Formation (when real) */}
+      {isReal && (
+        <group ref={imageRef} position={[imgPos, 1.3, 0]}>
+          <Cylinder 
+            args={[0.04, 0.04, objectHeight]} 
+            position={[0, isInverted ? -objectHeight/2 : objectHeight/2, 0]}
+            rotation={isInverted ? [0, 0, Math.PI] : [0, 0, 0]}
+          >
+            <meshStandardMaterial color="#32cd32" transparent opacity={0.8} />
+          </Cylinder>
+          <Cylinder 
+            args={[0.08, 0, 0.2]} 
+            position={[0, isInverted ? -objectHeight : objectHeight, 0]}
+            rotation={isInverted ? [0, 0, Math.PI] : [0, 0, 0]}
+          >
+            <meshStandardMaterial color="#32cd32" transparent opacity={0.8} />
+          </Cylinder>
+        </group>
+      )}
+      
+      {/* Projection Screen */}
+      {isReal && (
+        <group ref={screenRef} position={[imgPos, 1.6, 0]}>
+          <Box args={[0.05, 2.8, 2.2]} position={[0, 0, 0]}>
+            <meshStandardMaterial color="#f8f9fa" transparent opacity={0.9} />
+          </Box>
+          <Box args={[0.2, 3.2, 0.2]} position={[0, -1.6, 0]}>
+            <meshStandardMaterial color="#2d3748" />
+          </Box>
+        </group>
+      )}
+      
+      {/* Light Rays - Following Laws of Refraction */}
+      {/* Ray 1: Parallel to principal axis → refracts through focus */}
+      <Ray 
+        start={[objPos, 1.3 + objectHeight, 0]} 
+        end={[0, 1.3 + objectHeight, 0]} 
+        color="#ffd700" 
+      />
+      <Ray 
+        start={[0, 1.3 + objectHeight, 0]} 
+        end={isReal ? [imgPos, 1.3 + (isInverted ? -imageHeight : imageHeight), 0] : [focalPos, 1.3, 0]} 
+        color="#ffd700" 
+        opacity={isReal ? 1 : 0.5}
+        dashed={!isReal}
+      />
+      
+      {/* Ray 2: Through optical center → passes straight */}
+      <Ray 
+        start={[objPos, 1.3 + objectHeight, 0]} 
+        end={isReal ? [imgPos, 1.3 + (isInverted ? -imageHeight : imageHeight), 0] : [4, 1.3 + objectHeight * 2, 0]} 
+        color="#ff6b35" 
+        opacity={isReal ? 1 : 0.5}
+        dashed={!isReal}
+      />
+      
+      {/* Ray 3: Through focus → emerges parallel to axis */}
+      <Ray 
+        start={[objPos, 1.3 + objectHeight, 0]} 
+        end={[-focalPos, 1.3, 0]} 
+        color="#e53e3e" 
+      />
+      <Ray 
+        start={[0, 1.3, 0]} 
+        end={isReal ? [imgPos, 1.3 + (isInverted ? -imageHeight : imageHeight), 0] : [4, 1.3, 0]} 
+        color="#e53e3e" 
+        opacity={isReal ? 1 : 0.4}
+        dashed={!isReal}
+      />
+      
+      {/* Measurement Scale */}
+      {[-4, -3, -2, -1, 0, 1, 2, 3, 4].map(pos => (
+        <group key={pos}>
+          <Box args={[0.02, 0.25, 0.02]} position={[pos, 0.25, 0]}>
+            <meshStandardMaterial color="#718096" />
+          </Box>
+          <Text position={[pos, 0.45, 0]} fontSize={0.08} color="#4a5568">
+            {pos * 8}cm
+          </Text>
+        </group>
       ))}
+      
+      {/* Laboratory Table Surface */}
+      <Box args={[12, 0.05, 4]} position={[0, -0.4, 0]}>
+        <meshStandardMaterial color="#f7fafc" metalness={0.1} roughness={0.8} />
+      </Box>
     </group>
   );
 };
@@ -674,15 +784,15 @@ const MirrorRay = ({ start, end, color, dashed = false }) => {
   );
 };
 
-// Real Optics - Concave Mirror
+// Real Optics - Concave Mirror Bench
 const MirrorExperiment = ({ isPlaying, onMeasurement, onPromptChange, parameters }) => {
   const objectRef = useRef();
   const imageRef = useRef();
   const screenRef = useRef();
   
-  const objectDistance = Math.max(5, parameters.objectDistance || 25);
+  const objectDistance = Math.max(5, parameters.objectDistance || 30);
   const focalLength = parameters.focalLength || 15;
-  const objectHeight = 1.5;
+  const objectHeight = 2;
   
   // Mirror equation: 1/f = 1/do + 1/di
   const imageDistance = (focalLength * objectDistance) / (objectDistance - focalLength);
@@ -691,10 +801,10 @@ const MirrorExperiment = ({ isPlaying, onMeasurement, onPromptChange, parameters
   const isReal = imageDistance > 0 && objectDistance > focalLength;
   const isInverted = magnification < 0;
   
-  // Scale positions for 3D (1 unit = 1 cm)
-  const objPos = -objectDistance / 5;
-  const imgPos = isReal ? -Math.abs(imageDistance) / 5 : objPos;
-  const focalPos = -focalLength / 5;
+  // Scale positions for 3D scene
+  const objPos = -objectDistance / 8;
+  const imgPos = isReal ? imageDistance / 8 : objPos;
+  const focalPos = focalLength / 8;
   
   React.useEffect(() => {
     if (objectRef.current) {
@@ -714,158 +824,222 @@ const MirrorExperiment = ({ isPlaying, onMeasurement, onPromptChange, parameters
 
   onMeasurement({
     'Object Distance (cm)': objectDistance.toFixed(1),
-    'Image Distance (cm)': imageDistance.toFixed(1),
+    'Image Distance (cm)': Math.abs(imageDistance).toFixed(1),
     'Focal Length (cm)': focalLength.toFixed(1),
     'Magnification': magnification.toFixed(2),
     'Image Height (cm)': imageHeight.toFixed(1),
     'Image Type': isReal ? 'Real, Inverted' : 'Virtual, Upright'
   });
 
-  // Ray calculation for proper reflection
-  const calculateRayPath = (startX, startY, endX, endY) => {
-    const length = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
-    const midX = (startX + endX) / 2;
-    const midY = (startY + endY) / 2;
-    const angle = Math.atan2(endY - startY, endX - startX);
-    return { length, midX, midY, angle };
-  };
-
-  const Ray = ({ start, end, color, opacity = 1 }) => {
-    const { length, midX, midY, angle } = calculateRayPath(start[0], start[1], end[0], end[1]);
+  const Ray = ({ start, end, color, opacity = 1, dashed = false }) => {
+    const length = Math.sqrt((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2);
+    const midX = (start[0] + end[0]) / 2;
+    const midY = (start[1] + end[1]) / 2;
+    const angle = Math.atan2(end[1] - start[1], end[0] - start[0]);
+    
     return (
       <Cylinder
-        args={[0.008, 0.008, length]}
+        args={[0.01, 0.01, length]}
         position={[midX, midY, 0]}
         rotation={[0, 0, angle]}
       >
-        <meshStandardMaterial color={color} transparent opacity={opacity} />
+        <meshStandardMaterial 
+          color={color} 
+          transparent 
+          opacity={opacity}
+          emissive={color}
+          emissiveIntensity={0.1}
+        />
       </Cylinder>
     );
   };
 
   return (
     <group>
-      {/* Clean optical bench */}
-      <Box args={[12, 0.08, 0.3]} position={[0, 0, 0]}>
-        <meshStandardMaterial color="#2d3748" />
+      {/* Professional Optical Bench Base */}
+      <Box args={[10, 0.12, 0.8]} position={[0, 0, 0]}>
+        <meshStandardMaterial color="#2a2a2a" metalness={0.8} roughness={0.2} />
       </Box>
       
-      {/* Principal axis */}
-      <Cylinder args={[0.005, 0.005, 10]} rotation={[0, Math.PI/2, 0]} position={[-1, 0.8, 0]}>
-        <meshStandardMaterial color="#4a5568" />
+      {/* Bench Rails */}
+      <Cylinder args={[0.02, 0.02, 10]} rotation={[0, Math.PI/2, 0]} position={[0, 0.08, 0.3]}>
+        <meshStandardMaterial color="#4a5568" metalness={0.9} roughness={0.1} />
+      </Cylinder>
+      <Cylinder args={[0.02, 0.02, 10]} rotation={[0, Math.PI/2, 0]} position={[0, 0.08, -0.3]}>
+        <meshStandardMaterial color="#4a5568" metalness={0.9} roughness={0.1} />
       </Cylinder>
       
-      {/* Concave mirror - realistic parabolic shape */}
-      <group position={[0, 0.8, 0]}>
-        <Sphere args={[1.2]} position={[0.6, 0, 0]} scale={[-0.5, 1, 1]}>
+      {/* Principal Optical Axis */}
+      <Cylinder args={[0.003, 0.003, 8]} rotation={[0, Math.PI/2, 0]} position={[0, 1.2, 0]}>
+        <meshStandardMaterial color="#e53e3e" emissive="#e53e3e" emissiveIntensity={0.2} />
+      </Cylinder>
+      
+      {/* Concave Mirror Assembly */}
+      <group position={[0, 1.2, 0]}>
+        {/* Mirror Surface - Parabolic Concave */}
+        <Sphere args={[1.5]} position={[0.75, 0, 0]} scale={[-0.4, 0.8, 0.8]}>
           <meshStandardMaterial 
-            color="#f7fafc" 
-            metalness={0.98} 
+            color="#f8f9fa" 
+            metalness={0.95} 
             roughness={0.02}
+            envMapIntensity={2}
           />
         </Sphere>
-        <Cylinder args={[1.2, 1.2, 0.05]} rotation={[Math.PI/2, 0, 0]} position={[0.02, 0, 0]}>
-          <meshStandardMaterial color="#1a202c" />
+        
+        {/* Mirror Frame */}
+        <Cylinder args={[1.2, 1.2, 0.08]} rotation={[Math.PI/2, 0, 0]} position={[0.04, 0, 0]}>
+          <meshStandardMaterial color="#1a1a1a" metalness={0.7} roughness={0.3} />
+        </Cylinder>
+        
+        {/* Mirror Backing */}
+        <Cylinder args={[1.15, 1.15, 0.15]} rotation={[Math.PI/2, 0, 0]} position={[-0.05, 0, 0]}>
+          <meshStandardMaterial color="#2d3748" />
         </Cylinder>
       </group>
       
-      {/* Mirror stand */}
-      <Box args={[0.15, 1.6, 0.15]} position={[0, 0, 0]}>
-        <meshStandardMaterial color="#2d3748" />
-      </Box>
+      {/* Mirror Stand with Adjustable Mount */}
+      <group position={[0, 0.6, 0]}>
+        <Box args={[0.2, 1.2, 0.2]} position={[0, 0, 0]}>
+          <meshStandardMaterial color="#2d3748" metalness={0.6} roughness={0.4} />
+        </Box>
+        <Cylinder args={[0.15, 0.15, 0.3]} rotation={[0, Math.PI/2, 0]} position={[0, 0.6, 0]}>
+          <meshStandardMaterial color="#4a5568" metalness={0.7} roughness={0.3} />
+        </Cylinder>
+      </group>
       
-      {/* Focal point marker */}
-      <Sphere args={[0.03]} position={[focalPos, 0.8, 0]}>
-        <meshStandardMaterial color="#f6ad55" emissive="#f6ad55" emissiveIntensity={0.2} />
+      {/* Focal Point Markers */}
+      <Sphere args={[0.04]} position={[focalPos, 1.2, 0]}>
+        <meshStandardMaterial color="#ffd700" emissive="#ffd700" emissiveIntensity={0.3} />
       </Sphere>
+      <Text position={[focalPos, 1.0, 0]} fontSize={0.1} color="#ffd700">F</Text>
       
-      {/* Object (light source) */}
-      <group ref={objectRef} position={[objPos, 0.8, 0]}>
-        <Cylinder args={[0.03, 0.03, objectHeight]} position={[0, objectHeight/2, 0]}>
-          <meshStandardMaterial color="#e53e3e" emissive="#e53e3e" emissiveIntensity={0.1} />
+      {/* Center of Curvature Marker */}
+      <Sphere args={[0.03]} position={[focalPos * 2, 1.2, 0]}>
+        <meshStandardMaterial color="#ff6b35" emissive="#ff6b35" emissiveIntensity={0.2} />
+      </Sphere>
+      <Text position={[focalPos * 2, 1.0, 0]} fontSize={0.1} color="#ff6b35">C</Text>
+      
+      {/* Object (Candle) */}
+      <group ref={objectRef} position={[objPos, 1.2, 0]}>
+        {/* Candle Base */}
+        <Cylinder args={[0.08, 0.08, 0.3]} position={[0, -0.15, 0]}>
+          <meshStandardMaterial color="#8b4513" />
         </Cylinder>
-        <Cylinder args={[0.06, 0, 0.15]} position={[0, objectHeight, 0]}>
-          <meshStandardMaterial color="#e53e3e" />
+        {/* Candle Body */}
+        <Cylinder args={[0.05, 0.05, objectHeight]} position={[0, objectHeight/2, 0]}>
+          <meshStandardMaterial color="#fffacd" />
         </Cylinder>
+        {/* Flame */}
+        <Sphere args={[0.08, 0.12, 0.08]} position={[0, objectHeight + 0.1, 0]}>
+          <meshStandardMaterial 
+            color="#ff4500" 
+            emissive="#ff4500" 
+            emissiveIntensity={0.5}
+            transparent
+            opacity={0.8}
+          />
+        </Sphere>
+        {/* Object Stand */}
+        <Box args={[0.15, 0.8, 0.15]} position={[0, -0.4, 0]}>
+          <meshStandardMaterial color="#2d3748" />
+        </Box>
       </group>
       
-      {/* Image (when real) */}
+      {/* Image Formation (when real) */}
       {isReal && (
-        <group ref={imageRef} position={[imgPos, 0.8, 0]}>
+        <group ref={imageRef} position={[imgPos, 1.2, 0]}>
           <Cylinder 
-            args={[0.03, 0.03, objectHeight]} 
-            position={[0, -objectHeight/2, 0]}
-            rotation={[0, 0, Math.PI]}
+            args={[0.05, 0.05, objectHeight]} 
+            position={[0, isInverted ? -objectHeight/2 : objectHeight/2, 0]}
+            rotation={isInverted ? [0, 0, Math.PI] : [0, 0, 0]}
           >
-            <meshStandardMaterial color="#38a169" transparent opacity={0.8} />
+            <meshStandardMaterial color="#32cd32" transparent opacity={0.7} />
           </Cylinder>
-          <Cylinder 
-            args={[0.06, 0, 0.15]} 
-            position={[0, -objectHeight, 0]}
-            rotation={[0, 0, Math.PI]}
+          <Sphere 
+            args={[0.08, 0.12, 0.08]} 
+            position={[0, isInverted ? -objectHeight - 0.1 : objectHeight + 0.1, 0]}
           >
-            <meshStandardMaterial color="#38a169" transparent opacity={0.8} />
-          </Cylinder>
+            <meshStandardMaterial 
+              color="#32cd32" 
+              transparent 
+              opacity={0.6}
+              emissive="#32cd32"
+              emissiveIntensity={0.2}
+            />
+          </Sphere>
         </group>
       )}
       
-      {/* Screen for real images */}
+      {/* Projection Screen */}
       {isReal && (
-        <Box ref={screenRef} args={[0.02, 2, 1]} position={[imgPos, 1.8, 0]}>
-          <meshStandardMaterial color="#f7fafc" transparent opacity={0.7} />
-        </Box>
+        <group ref={screenRef} position={[imgPos, 1.5, 0]}>
+          <Box args={[0.05, 2.5, 2]} position={[0, 0, 0]}>
+            <meshStandardMaterial color="#f8f9fa" transparent opacity={0.8} />
+          </Box>
+          <Box args={[0.2, 2.8, 0.2]} position={[0, -1.4, 0]}>
+            <meshStandardMaterial color="#2d3748" />
+          </Box>
+        </group>
       )}
       
-      {/* Light rays following reflection laws */}
-      {/* Ray 1: Parallel to axis → reflects through focus */}
+      {/* Light Rays - Following Laws of Reflection */}
+      {/* Ray 1: Parallel to principal axis → reflects through focus */}
       <Ray 
-        start={[objPos, 0.8 + objectHeight, 0]} 
-        end={[0, 0.8 + objectHeight, 0]} 
+        start={[objPos, 1.2 + objectHeight, 0]} 
+        end={[0, 1.2 + objectHeight, 0]} 
         color="#ffd700" 
       />
       <Ray 
-        start={[0, 0.8 + objectHeight, 0]} 
-        end={isReal ? [imgPos, 0.8 - imageHeight, 0] : [focalPos, 0.8, 0]} 
+        start={[0, 1.2 + objectHeight, 0]} 
+        end={isReal ? [imgPos, 1.2 + (isInverted ? -imageHeight : imageHeight), 0] : [-4, 1.2 + objectHeight * 2, 0]} 
         color="#ffd700" 
         opacity={isReal ? 1 : 0.5}
+        dashed={!isReal}
       />
       
       {/* Ray 2: Through focus → reflects parallel to axis */}
       <Ray 
-        start={[objPos, 0.8 + objectHeight, 0]} 
-        end={[focalPos, 0.8, 0]} 
+        start={[objPos, 1.2 + objectHeight, 0]} 
+        end={[focalPos, 1.2, 0]} 
         color="#ff6b35" 
       />
       <Ray 
-        start={[focalPos, 0.8, 0]} 
-        end={isReal ? [imgPos, 0.8 - imageHeight, 0] : [0, 0.8 + objectHeight, 0]} 
+        start={[focalPos, 1.2, 0]} 
+        end={isReal ? [imgPos, 1.2 + (isInverted ? -imageHeight : imageHeight), 0] : [4, 1.2 + objectHeight, 0]} 
         color="#ff6b35" 
         opacity={isReal ? 1 : 0.5}
+        dashed={!isReal}
       />
       
-      {/* Ray 3: Through center → reflects back along same path */}
+      {/* Ray 3: Through center of curvature → reflects back */}
       <Ray 
-        start={[objPos, 0.8 + objectHeight, 0]} 
-        end={[focalPos * 2, 0.8, 0]} 
+        start={[objPos, 1.2 + objectHeight, 0]} 
+        end={[focalPos * 2, 1.2, 0]} 
         color="#e53e3e" 
       />
       <Ray 
-        start={[focalPos * 2, 0.8, 0]} 
-        end={isReal ? [imgPos, 0.8 - imageHeight, 0] : [objPos, 0.8 + objectHeight, 0]} 
+        start={[focalPos * 2, 1.2, 0]} 
+        end={isReal ? [imgPos, 1.2 + (isInverted ? -imageHeight : imageHeight), 0] : [objPos * 2, 1.2 + objectHeight * 2, 0]} 
         color="#e53e3e" 
-        opacity={isReal ? 1 : 0.3}
+        opacity={isReal ? 1 : 0.4}
+        dashed={!isReal}
       />
       
-      {/* Scale markings */}
-      {[-5, -4, -3, -2, -1, 1, 2, 3, 4, 5].map(pos => (
-        <Box key={pos} args={[0.01, 0.15, 0.01]} position={[pos, 0.1, 0]}>
-          <meshStandardMaterial color="#718096" />
-        </Box>
+      {/* Measurement Scale */}
+      {[-4, -3, -2, -1, 0, 1, 2, 3, 4].map(pos => (
+        <group key={pos}>
+          <Box args={[0.02, 0.2, 0.02]} position={[pos, 0.2, 0]}>
+            <meshStandardMaterial color="#718096" />
+          </Box>
+          <Text position={[pos, 0.4, 0]} fontSize={0.08} color="#4a5568">
+            {pos * 8}cm
+          </Text>
+        </group>
       ))}
       
-      {/* Clean background */}
-      <Box args={[15, 0.02, 6]} position={[0, -0.8, 0]}>
-        <meshStandardMaterial color="#edf2f7" />
+      {/* Laboratory Table Surface */}
+      <Box args={[12, 0.05, 4]} position={[0, -0.5, 0]}>
+        <meshStandardMaterial color="#f7fafc" metalness={0.1} roughness={0.8} />
       </Box>
     </group>
   );
