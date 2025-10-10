@@ -11,7 +11,8 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Home' },
     { path: '/physics', label: 'Physics Lab' },
-    { path: '/playground', label: 'Circuit Builder' }
+    { path: '/playground', label: 'Circuit Builder' },
+    { path: '/astronomy', label: 'Astronomy Lab' }
   ];
 
   const isActive = (path) => location.pathname === path;

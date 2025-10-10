@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Physics from './pages/Physics';
 import Playground from './pages/Playground';
+import Astronomy from './pages/Astronomy';
 import './styles/globals.css';
 
 function App() {
@@ -34,6 +35,12 @@ function App() {
                   <ProtectedRoute>
                     <Navbar />
                     <Playground />
+                  </ProtectedRoute>
+                } />
+                <Route path="/astronomy" element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <Astronomy />
                   </ProtectedRoute>
                 } />
               </Routes>
