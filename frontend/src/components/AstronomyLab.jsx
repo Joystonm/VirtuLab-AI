@@ -862,16 +862,6 @@ const AstronomyLab = () => {
                 className="w-full"
               />
             </div>
-            
-            <button
-              onClick={() => {
-                setIsPlaying(false);
-                initializeExperiment();
-              }}
-              className="w-full py-2 px-4 bg-gray-600 hover:bg-gray-500 text-white rounded-lg font-medium transition-colors"
-            >
-              🔄 Reset
-            </button>
           </div>
         </div>
 

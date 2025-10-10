@@ -176,12 +176,6 @@ const ExperimentSimulation = ({ experiment, onBack }) => {
             >
               {isPlaying ? '⏸️ Pause' : '▶️ Play'}
             </button>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-medium text-sm transition-all duration-200 shadow-sm"
-            >
-              🔄 Reset
-            </button>
           </div>
         </div>
 
@@ -265,7 +259,7 @@ const ExperimentSimulation = ({ experiment, onBack }) => {
             </p>
             <button
               onClick={() => setShowConceptPanel(false)}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors"
+              className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
             >
               Got it!
             </button>

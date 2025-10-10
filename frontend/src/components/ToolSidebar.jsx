@@ -69,9 +69,6 @@ const ToolSidebar = ({ activeTab }) => {
         <h3 className="font-semibold text-gray-800 mb-2">Quick Actions</h3>
         <div className="space-y-2">
           <button className="w-full text-left text-sm text-blue-600 hover:text-blue-800">
-            🔄 Reset Lab
-          </button>
-          <button className="w-full text-left text-sm text-blue-600 hover:text-blue-800">
             💾 Save Experiment
           </button>
         </div>
