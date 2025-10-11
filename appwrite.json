@@ -5,9 +5,8 @@
   "databases": [],
   "collections": [],
   "buckets": [],
-  "settings": {
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist",
-    "installCommand": "npm install"
+  "hosting": {
+    "source": "./dist",
+    "fallback": "index.html"
   }
 }
