@@ -1,4 +1,13 @@
 {
   "projectId": "68de6ea10017532e1685",
-  "projectName": "VirtuLab"
+  "projectName": "VirtuLab",
+  "functions": [],
+  "databases": [],
+  "collections": [],
+  "buckets": [],
+  "settings": {
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "installCommand": "npm install"
+  }
 }
