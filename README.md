@@ -34,37 +34,3 @@ npm run install:all
 npm run dev
 ```
 
-## 📁 Project Structure
-
-```
-├── frontend/          # React + Three.js client
-│   ├── src/
-│   │   ├── components/    # UI components & tools
-│   │   ├── scenes/        # 3D physics lab & 2D circuit playground
-│   │   ├── hooks/         # Custom React hooks
-│   │   └── context/       # Global state management
-├── backend/           # Node.js + Express backend
-│   ├── src/
-│   │   ├── api/           # REST API routes
-│   │   ├── services/      # Application services
-│   │   └── models/        # Data models
-└── docs/              # Documentation
-```
-
-## 🔬 Physics Experiments
-
-### 3D Motion Lab
-- Pendulum oscillations with energy conversion
-- Spring-mass systems following Hooke's Law
-- Inclined plane motion and friction
-- Lens focusing and optics principles
-
-### 2D Circuit Builder
-- Complete circuit simulation
-- Component behavior visualization
-- Real-time electrical measurements
-- Interactive learning tools
-
----
-
-**VirtuLab = Interactive Physics & Electrical Simulations for Education**
