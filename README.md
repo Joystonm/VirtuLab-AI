@@ -4,8 +4,10 @@ VirtuLab is a browser-based virtual physics and electrical lab that allows stude
 
 ## 🚀 Features
 
+- **🔐 Authentication System** - Secure login/signup with Appwrite
 - **3D Motion & Optics Lab** - Simulate pendulums, springs, lenses, and Newton's laws
 - **2D Circuit Builder** - Drag & drop electrical components with precise wire drawing
+- **🌌 Astronomy Lab** - Explore celestial mechanics and space phenomena
 - **Interactive Physics Simulations** - Explore mechanics, oscillations, and optics
 - **Real-time Measurements** - Live data collection and analysis
 - **Educational Content** - Built-in explanations of physics concepts
@@ -15,6 +17,7 @@ VirtuLab is a browser-based virtual physics and electrical lab that allows stude
 - **Frontend**: React + Three.js + Tailwind CSS
 - **3D Physics**: React Three Fiber + Cannon.js
 - **2D Circuit Builder**: HTML5 Canvas with custom wire drawing
+- **Authentication**: Appwrite Auth
 - **Backend**: Node.js + Express + Appwrite
 
 ## 🎯 Color Palette
@@ -27,10 +30,9 @@ VirtuLab is a browser-based virtual physics and electrical lab that allows stude
 ## 🚀 Quick Start
 
 ```bash
-# Install all dependencies
-npm run install:all
+# Install dependencies
+npm install
 
-# Start development servers
+# Start development server
 npm run dev
 ```
-
