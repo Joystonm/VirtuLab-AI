@@ -12,21 +12,6 @@ VirtuLab is a browser-based virtual physics and electrical lab that allows stude
 - **Real-time Measurements** - Live data collection and analysis
 - **Educational Content** - Built-in explanations of physics concepts
 
-## 🖥️ Tech Stack
-
-- **Frontend**: React + Three.js + Tailwind CSS
-- **3D Physics**: React Three Fiber + Cannon.js
-- **2D Circuit Builder**: HTML5 Canvas with custom wire drawing
-- **Authentication**: Appwrite Auth
-- **Backend**: Node.js + Express + Appwrite
-
-## 🎯 Color Palette
-
-- **Primary**: #1E40AF (Deep Blue - science & trust)
-- **Secondary**: #0EA5E9 (Cyan - interactive/modern)  
-- **Accent**: #F59E0B (Amber - warnings/errors)
-- **Background**: #F9FAFB (Light Gray - clean lab)
-
 ## 🚀 Quick Start
 
 ```bash
