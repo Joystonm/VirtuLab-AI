@@ -1,4 +1,4 @@
-# VirtuLab - Virtual Physics Lab
+# VirtuLab
 
 VirtuLab is a browser-based virtual physics and electrical lab that allows students to perform realistic experiments and simulations in an interactive environment.
 
